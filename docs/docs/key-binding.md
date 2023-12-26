@@ -80,6 +80,10 @@ bindkey '^[OA' _atuin_search_widget
 
 ## bash
 
+The line `eval "$(atuin init bash)"` is added to ~/.bashrc upon installation. 
+
+The following is a modification to .bashrc that enables Atuin and binds <kbd>CTRL-r</kbd> to history:
+
 ```
 export ATUIN_NOBIND="true"
 eval "$(atuin init bash)"
@@ -87,6 +91,39 @@ eval "$(atuin init bash)"
 # bind to ctrl-r, add any other bindings you want here too
 bind -x '"\C-r": __atuin_history'
 ```
+
+**Example 2** - disable up arrow and use <kbd>CTRL-up</kbd> instead
+
+Add/modify the following line/s to the end of the .bashrc script.
+
+```
+# added to .bashrc to disable up arrow and use CTRL-up
+eval "$(atuin init bash --disable-up-arrow)"
+bind -x '"\e[1;5A":"__atuin_history"'
+```
+
+**explanatory NOTES for Bash users**
+
+To find the codes of the key you desire to bind, hit `CTRL v` then hit the desired combo.
+
+Example (EN keyboard): <kbd>CRTL-upkey</kbd> returns ^[[1;5A 
+
+The first two characters ^[ is the equivalent of "escape" (or \e). In the command to be implemented one must use the \e command.  
+
+To ensure the command is "invisibly" executed, the -x parameter is used. Without this -x, Bash may (i.e will) show the command executed in the shells history (undesirable).
+
+For example, running this in a bash/terminal will bind the above example:
+
+bind -x '"\e[1;5A":"__atuin_history"'
+
+This setting will not be permanent and will be lost upon reboot (end of session). To make it permanent add it to .bashrc:
+
+```
+# added to .bashrc
+eval "$(atuin init bash --disable-up-arrow)"
+bind -x '"\e[1;5A":"__atuin_history"'
+```
+
 
 ## fish
 Edit key bindings in FISH shell by adding the following to ~/.config/fish/config.fish
@@ -108,6 +145,17 @@ In your terminal, run `fish_key_reader` then punch the desired keystroke/s.
 For example, in Gnome Terminal the output to <kbd>CTRL-upkey</kbd> is `bind \e\[1\;5A 'do something'`
 
 So, adding this to the above sample, `bind \e\[1\;5A _atuin_search` will provide the additional search keybinding.
+
+A note for absolute clarity, the final config to disable up-arrow and bind CTRL-up, will look something like this:
+
+```
+# This lives in ~/.config/fish/config.fish
+if status is-interactive
+    # Commands to run in interactive sessions can go here
+    atuin init --disable-up-arrow fish | source
+    bind \e\[1\;5A _atuin_search
+end
+```
 
 ## nu
 
